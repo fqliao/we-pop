@@ -11,11 +11,10 @@ targetCompatibility = 1.8
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    maven {
-		url "http://maven.aliyun.com/nexus/content/groups/public/"
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/"
 		//url "http://maven.weoa.com/nexus/content/groups/public/"
-		
     }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url "https://dl.bintray.com/ethereum/maven/" }
     mavenLocal()
     mavenCentral()
@@ -83,12 +82,17 @@ List web3sdk = [
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile logger,spring,fastjson,apache_commons,retrofit,guava,lombok,web3sdk
-	//公网V1.1.0
-   	compile files('libs/web3sdk.jar')
+//	compile ("org.fisco-bcos:web3sdk:2.0-SNAPSHOT")
+	compile group:"org.fisco-bcos", name:"web3sdk", version:"2.0-SNAPSHOT", changing: true
+//   	compile files('libs/web3sdk.jar')
    // compile ('org.fisco-bcos:web3sdk:2.0.2')
-   
+
 }
 
+configurations.all {
+// check for updates every build
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 sourceSets {
 	main {
 		java {
