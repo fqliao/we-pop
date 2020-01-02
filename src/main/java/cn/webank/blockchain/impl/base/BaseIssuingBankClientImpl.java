@@ -1,24 +1,23 @@
 package cn.webank.blockchain.impl.base;
 
-import cn.webank.blockchain.constants.CurrencyType;
-import cn.webank.blockchain.constants.DirectRouteMsgType;
-import cn.webank.blockchain.constants.ErrorCode;
-import cn.webank.blockchain.contracts.web3j.AcquirerBank;
-import cn.webank.blockchain.contracts.web3j.AcquirerBank.TransRetLogEventResponse;
-import cn.webank.blockchain.contracts.web3j.ClearCenter;
-import cn.webank.blockchain.contracts.web3j.IssueBank;
-import cn.webank.blockchain.protocol.*;
-import cn.webank.blockchain.result.DirectRouteNotifyMsgResult;
-import cn.webank.blockchain.spi.common.dto.BlockChainAddress;
-import cn.webank.blockchain.spi.common.dto.args.IssuingBankUserAccountArgs;
-import cn.webank.blockchain.spi.common.protocols.response.ResponseStruct;
-import cn.webank.blockchain.spi.common.protocols.response.TransactionReceiptResult;
-import cn.webank.blockchain.utils.Utils;
-import cn.webank.common.conf.Config;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.interfaces.ECPrivateKey;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.abi.datatypes.Address;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.protocol.core.RemoteCall;
@@ -31,14 +30,38 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.math.BigInteger;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.interfaces.ECPrivateKey;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import cn.webank.blockchain.constants.CurrencyType;
+import cn.webank.blockchain.constants.DirectRouteMsgType;
+import cn.webank.blockchain.constants.ErrorCode;
+import cn.webank.blockchain.contracts.web3j.AcquirerBank;
+import cn.webank.blockchain.contracts.web3j.AcquirerBank.TransRetLogEventResponse;
+import cn.webank.blockchain.contracts.web3j.ClearCenter;
+import cn.webank.blockchain.contracts.web3j.IssueBank;
+import cn.webank.blockchain.protocol.CheckDirectRouteMsgHealthArgs;
+import cn.webank.blockchain.protocol.CreateVirtualAccountArgs;
+import cn.webank.blockchain.protocol.CreateVirtualAccountStatus;
+import cn.webank.blockchain.protocol.DoTransactionArgs;
+import cn.webank.blockchain.protocol.DoTransactionResult;
+import cn.webank.blockchain.protocol.ExchangeRate;
+import cn.webank.blockchain.protocol.GetClearingStatusArgs;
+import cn.webank.blockchain.protocol.GetClearingStatusResult;
+import cn.webank.blockchain.protocol.GetClearingTransArgs;
+import cn.webank.blockchain.protocol.GetClearingTransResult;
+import cn.webank.blockchain.protocol.GetMerchantInfoResult;
+import cn.webank.blockchain.protocol.GetTransListArgs;
+import cn.webank.blockchain.protocol.GetTransListResult;
+import cn.webank.blockchain.protocol.IntegerThreeExtArray;
+import cn.webank.blockchain.protocol.IsAccountExistResult;
+import cn.webank.blockchain.protocol.SetCheckCodeStatusNotifyArgs;
+import cn.webank.blockchain.protocol.StringThreeExtArray;
+import cn.webank.blockchain.protocol.UpdateCheckCodeStatusResult;
+import cn.webank.blockchain.result.DirectRouteNotifyMsgResult;
+import cn.webank.blockchain.spi.common.dto.BlockChainAddress;
+import cn.webank.blockchain.spi.common.dto.args.IssuingBankUserAccountArgs;
+import cn.webank.blockchain.spi.common.protocols.response.ResponseStruct;
+import cn.webank.blockchain.spi.common.protocols.response.TransactionReceiptResult;
+import cn.webank.blockchain.utils.Utils;
+import cn.webank.common.conf.Config;
 
 
 /**
@@ -111,7 +134,8 @@ public class BaseIssuingBankClientImpl extends BaseClientImpl {
 		}
         
         try {
-			credentials = loadkey(keyStoreFileName,keyStorePassword,keyPassword);
+            credentials = GenCredential.create();
+            System.out.println("tx.origin = " + credentials.getAddress());
 		} catch (Exception e) {
 			logger.error("[loadkey]  failed.");
 			web3j = null;

@@ -182,7 +182,9 @@ bak/
 *jpg
 
 
-
+src/main/resources/ca.crt
+src/main/resources/sdk.*
+src/main/resources/node.*
 
 # for specific project
 doc/bak/

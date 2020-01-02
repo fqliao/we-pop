@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.fisco.bcos.web3j.abi.datatypes.Address;
+import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
+import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterNumber;
+import org.fisco.bcos.web3j.protocol.core.RemoteCall;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 
 import cn.webank.blockchain.api.accounting.RegTechClient;
 import cn.webank.blockchain.impl.base.BaseIssuingBankClientImpl;
@@ -18,15 +22,6 @@ import cn.webank.blockchain.protocol.GetCCTransListResult;
 import cn.webank.blockchain.protocol.PageArgs;
 import cn.webank.blockchain.spi.common.protocols.response.ResponseStruct;
 import cn.webank.blockchain.spi.common.protocols.response.TransactionQueryResult;
-import org.fisco.bcos.web3j.abi.datatypes.Address;
-import org.fisco.bcos.web3j.abi.datatypes.DynamicArray;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Int256;
-import org.fisco.bcos.web3j.abi.datatypes.generated.Uint256;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameter;
-import org.fisco.bcos.web3j.protocol.core.DefaultBlockParameterNumber;
-import org.fisco.bcos.web3j.protocol.core.RemoteCall;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock;;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 
 public class RegTechClientImpl extends BaseIssuingBankClientImpl implements RegTechClient {
 

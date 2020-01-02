@@ -1,25 +1,22 @@
 package cn.webank.demo;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.Properties;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.fisco.bcos.channel.client.Service;
 import org.fisco.bcos.web3j.crypto.Credentials;
 import org.fisco.bcos.web3j.crypto.ECKeyPair;
-import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.crypto.gm.GenCredential;
 import org.fisco.bcos.web3j.protocol.Web3j;
 import org.fisco.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.fisco.bcos.web3j.tx.gas.ContractGasProvider;
 import org.fisco.bcos.web3j.tx.gas.StaticGasProvider;
-import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +24,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import cn.webank.blockchain.contracts.web3j.*;
+import cn.webank.blockchain.contracts.web3j.AcquirerBank;
+import cn.webank.blockchain.contracts.web3j.AcquirerBankData;
+import cn.webank.blockchain.contracts.web3j.AcquirerBankInfo;
+import cn.webank.blockchain.contracts.web3j.CheckInfoManager;
+import cn.webank.blockchain.contracts.web3j.ClearCenter;
+import cn.webank.blockchain.contracts.web3j.ClearCenterData;
+import cn.webank.blockchain.contracts.web3j.ClearCenterInfo;
+import cn.webank.blockchain.contracts.web3j.DateTime;
+import cn.webank.blockchain.contracts.web3j.IssueBank;
+import cn.webank.blockchain.contracts.web3j.IssueBankData;
+import cn.webank.blockchain.contracts.web3j.IssueBankInfo;
+import cn.webank.blockchain.contracts.web3j.MerchantDataFactory;
+import cn.webank.blockchain.contracts.web3j.MerchantFactory;
+import cn.webank.blockchain.contracts.web3j.MerchantInfoFactory;
+import cn.webank.blockchain.contracts.web3j.OrderFactory;
+import cn.webank.blockchain.contracts.web3j.PopLimit;
+import cn.webank.blockchain.contracts.web3j.UserLimit;
 
 public class DeployClient {
 	static Logger logger = LoggerFactory.getLogger(DeployClient.class);
@@ -191,12 +204,8 @@ public class DeployClient {
 		} 
 
 		// init the client keys
-		keyPair = Keys.createEcKeyPair();
-		String address = Numeric.prependHexPrefix(Keys.getAddress(keyPair));
-		String priviteKey = "bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd";
-		String origin = "0x00571e6f3538bfb77dde21537769243f81e13570";
-		credentials = Credentials.create(priviteKey);
-		System.out.println("tx.origin = " + origin);
+		credentials = GenCredential.create();
+		System.out.println("tx.origin = " + credentials.getAddress());
 		System.out.println();
 
 		ChannelEthereumService channelEthereumService = new ChannelEthereumService();
